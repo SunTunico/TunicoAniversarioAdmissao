@@ -17,45 +17,52 @@ namespace TunicoAniversarioAdmissao.Controllers
                 {
                     conn.Open();
                     string query = @"
-                        SELECT id, nome, email, data_admissao
-                        FROM colaboradores
+                        SELECT 
+                            id, 
+                            name, 
+                            email, 
+                            admission_date 
+                        FROM 
+                            Users
                         WHERE 
-                            DAY(data_admissao) = DAY(GETDATE()) 
-                            AND MONTH(data_admissao) = MONTH(GETDATE())
-                            AND data_admissao <= DATEADD(YEAR, -1, GETDATE())";
+                            DAY(admission_date) = DAY(GETDATE()) 
+                            AND MONTH(admission_date) = MONTH(GETDATE()) 
+                            AND YEAR(admission_date) < YEAR(GETDATE());";
 
-                    SqlCommand cmd = new SqlCommand(query, conn);
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
-                        while (reader.Read())
+                        using (SqlDataReader reader = cmd.ExecuteReader())
                         {
-                            DateTime dataAdmissao = reader.GetDateTime(reader.GetOrdinal("data_admissao"));
-                            int anosNaEmpresa = DateTime.Now.Year - dataAdmissao.Year;
-
-                            // Ajuste para aniversários que ainda não ocorreram neste ano
-                            if (DateTime.Now.DayOfYear < dataAdmissao.DayOfYear)
+                            while (reader.Read())
                             {
-                                anosNaEmpresa--;
+                                DateTime admission_date = reader.GetDateTime(reader.GetOrdinal("admission_date"));
+                                int yearsOnCompany = DateTime.Now.Year - admission_date.Year;
+
+                                // Ajuste para aniversários que ainda não ocorreram neste ano
+                                if (DateTime.Now.DayOfYear < admission_date.DayOfYear)
+                                {
+                                    yearsOnCompany--;
+                                }
+
+                                // Cria o objeto Colaborador
+                                Colaborador colaborador = new Colaborador
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("id")),
+                                    name = reader.GetString(reader.GetOrdinal("name")),
+                                    email = reader.GetString(reader.GetOrdinal("email")),
+                                    admission_date = admission_date,
+                                    years_on_company = yearsOnCompany
+                                };
+
+                                colaboradores.Add(colaborador);
                             }
-
-                            // Cria o objeto Colaborador
-                            Colaborador colaborador = new Colaborador
-                            {
-                                Id = reader.GetInt32(reader.GetOrdinal("id")),
-                                Nome = reader.GetString(reader.GetOrdinal("nome")),
-                                Email = reader.GetString(reader.GetOrdinal("email")),
-                                DataAdmissao = dataAdmissao,
-                                AnosNaEmpresa = anosNaEmpresa
-                            };
-
-                            colaboradores.Add(colaborador);
                         }
                     }
 
-                    // Agora, atualiza a coluna anos_na_empresa no banco para cada colaborador
+                    // Atualiza a coluna `years_on_company` no banco para cada colaborador
                     foreach (var colaborador in colaboradores)
                     {
-                        AtualizarAnosNaEmpresa(conn, colaborador.Id, colaborador.AnosNaEmpresa);
+                        AtualizarAnosNaEmpresa(colaborador.Id, colaborador.years_on_company);
                     }
                 }
             }
@@ -67,16 +74,23 @@ namespace TunicoAniversarioAdmissao.Controllers
             return colaboradores;
         }
 
-        private void AtualizarAnosNaEmpresa(SqlConnection conn, int id, int anosNaEmpresa)
+        private void AtualizarAnosNaEmpresa(int id, int yearsOnCompany)
         {
             try
             {
-                string updateQuery = "UPDATE colaboradores SET anos_na_empresa = @anosNaEmpresa WHERE id = @id";
-                SqlCommand updateCmd = new SqlCommand(updateQuery, conn);
-                updateCmd.Parameters.AddWithValue("@anosNaEmpresa", anosNaEmpresa);
-                updateCmd.Parameters.AddWithValue("@id", id);
+                using (SqlConnection conn = new SqlConnection(Conexao.banco))
+                {
+                    conn.Open();
+                    string updateQuery = "UPDATE Users SET years_on_company = @anosNaEmpresa WHERE id = @id";
 
-                updateCmd.ExecuteNonQuery();
+                    using (SqlCommand updateCmd = new SqlCommand(updateQuery, conn))
+                    {
+                        updateCmd.Parameters.AddWithValue("@anosNaEmpresa", yearsOnCompany);
+                        updateCmd.Parameters.AddWithValue("@id", id);
+
+                        updateCmd.ExecuteNonQuery();
+                    }
+                }
             }
             catch (Exception ex)
             {
