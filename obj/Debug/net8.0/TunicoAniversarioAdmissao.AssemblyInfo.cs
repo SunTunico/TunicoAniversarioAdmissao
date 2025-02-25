@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TunicoAniversarioAdmissao")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4dae474cd5d17717cf6c0f6a84b495108abb0910")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+79d18464ee9d37874d5118f90249778354d1e99f")]
 [assembly: System.Reflection.AssemblyProductAttribute("TunicoAniversarioAdmissao")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TunicoAniversarioAdmissao")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
