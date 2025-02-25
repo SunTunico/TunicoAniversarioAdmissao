@@ -45,10 +45,12 @@ namespace TunicoAniversarioAdmissao
                     }
 
                     // Envia notificação com lista de destinatários
-                    string listaDestinatarios = string.Join(", ", aniversariantes.Select(c => $"{c.Nome} ({c.Email})"));
+                    string listaDestinatarios = string.Join(", ", aniversariantes.Select(c => $"{c.name} ({c.email})"));
                     emailService.EnviarEmailNotificacao("Rotina Executada com Sucesso",
                         $"A rotina de aniversários de admissão foi executada com sucesso. Destinatários:\n\n{listaDestinatarios}");
 
+                    Console.WriteLine("E-mails enviados e notificação enviada.");
+                    Console.WriteLine("E-mails enviados e notificação enviada.");
                     Console.WriteLine("E-mails enviados e notificação enviada.");
                 }
                 else
