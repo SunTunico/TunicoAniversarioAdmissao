@@ -17,6 +17,10 @@ namespace TunicoAniversarioAdmissao.Services
 
         public void EnviarEmailAniversario(Colaborador colaborador)
         {
+            if(colaborador.years_on_company == 0)
+            {
+                Console.WriteLine($"Erro ao enviar email para {colaborador.name}: 'Years on Company é igual a 0'");
+            }
             try
             {
                 using (MailMessage mail = new MailMessage())
@@ -85,7 +89,6 @@ namespace TunicoAniversarioAdmissao.Services
                 {
                     mail.From = new MailAddress(senderEmail);
                     mail.To.Add(Environment.GetEnvironmentVariable("NOTIFICACAO_EMAIL") ?? "");
-                    mail.Bcc.Add(Environment.GetEnvironmentVariable("BCC_EMAIL") ?? "");
                     mail.Subject = assunto;
                     mail.Body = mensagem;
 

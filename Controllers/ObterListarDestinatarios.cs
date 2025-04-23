@@ -23,7 +23,7 @@ namespace TunicoAniversarioAdmissao.Controllers
                             email, 
                             admission_date 
                         FROM 
-                            Users
+                            users
                         WHERE 
                             DAY(admission_date) = DAY(GETDATE()) 
                             AND MONTH(admission_date) = MONTH(GETDATE()) 
